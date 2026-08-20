@@ -1,65 +1,86 @@
-import { motion } from 'framer-motion';
-import { Button } from './ui/Button';
-import { ArrowRight, Sparkles, ShieldCheck, Zap } from 'lucide-react';
+import { motion } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 
-export const CTA = () => {
+export default function CTA() {
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden bg-velora-bg border-t border-velora-border/40">
-      {/* Background Animated Glows & Grid */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-velora-accent/15 rounded-full blur-[180px] pointer-events-none -z-10" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293d0a_1px,transparent_1px),linear-gradient(to_bottom,#1f293d0a_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <section className="py-24 lg:py-32 border-t border-wire">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.8 }}
-          className="p-10 sm:p-16 md:p-20 rounded-3xl bg-gradient-to-b from-velora-surface/90 via-velora-surface/70 to-velora-surface-light/40 border border-velora-accent/30 shadow-2xl shadow-black/80 backdrop-blur-2xl relative overflow-hidden"
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="relative rounded-3xl overflow-hidden border border-mint/18 p-10 sm:p-14 lg:p-20"
+          style={{
+            background: 'linear-gradient(145deg, #0F3A22 0%, #071410 45%, #0C1F17 100%)',
+          }}
         >
-          {/* Top Decorative Sparkle Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-velora-accent/10 border border-velora-accent/30 text-velora-accent text-xs font-bold uppercase tracking-widest mb-8">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Join 100,000+ Modern Investors</span>
-          </div>
+          {/* Background layers */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse 65% 55% at 50% 0%, rgba(52,233,158,0.11) 0%, transparent 70%)',
+            }}
+            aria-hidden="true"
+          />
+          <div className="grid-texture absolute inset-0 opacity-[0.15]" aria-hidden="true" />
 
-          {/* Heading */}
-          <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[1.08] max-w-3xl mx-auto">
-            Take control of <span className="text-accent-gradient">your money.</span>
-          </h2>
+          {/* Content */}
+          <div className="relative max-w-2xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: 0.12 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-mint/10 border border-mint/18 rounded-full mb-8"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-mint" aria-hidden="true" />
+              <span className="text-[11px] font-mono text-mint tracking-wider">Your money. Your momentum.</span>
+            </motion.div>
 
-          {/* Supporting Text */}
-          <p className="mt-6 text-lg sm:text-xl text-velora-muted font-normal max-w-2xl mx-auto leading-relaxed">
-            Build better financial habits with a platform designed around you. Zero hidden markup, instant virtual card issuance, and AI-driven growth.
-          </p>
+            <motion.h2
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55, delay: 0.18, ease: 'easeOut' }}
+              className="font-display font-semibold text-ink leading-[1.05] mb-5"
+              style={{ fontSize: 'clamp(34px, 5vw, 66px)', letterSpacing: '-0.04em' }}
+            >
+              Take control of<br />your money.
+            </motion.h2>
 
-          {/* Button CTA */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" icon={<ArrowRight className="w-5 h-5" />} className="w-full sm:w-auto glow-accent">
-              Get Started Free
-            </Button>
-            <Button size="lg" variant="secondary" icon={<Zap className="w-5 h-5 text-velora-accent" />} className="w-full sm:w-auto">
-              Schedule Live Demo
-            </Button>
-          </div>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.28 }}
+              className="text-lg text-ink-2 mb-10 leading-relaxed"
+            >
+              Build better financial habits with a platform designed around you — not the other way around.
+            </motion.p>
 
-          {/* Guarantee Badges */}
-          <div className="mt-12 pt-8 border-t border-velora-border/60 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-velora-muted font-medium">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-velora-accent" />
-              <span>No Credit Card Required</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-velora-accent" />
-              <span>60-Second Setup</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-velora-accent" />
-              <span>Cancel Anytime</span>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: 0.36 }}
+              className="flex flex-col sm:flex-row gap-3 justify-center"
+            >
+              <button className="group flex items-center justify-center gap-2 px-8 py-4 bg-mint text-canvas font-semibold text-base rounded-xl hover:bg-mint/92 transition-all duration-200 hover:scale-[0.98] active:scale-95 font-display">
+                Get Started
+                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-200" aria-hidden="true" />
+              </button>
+              <a
+                href="#features"
+                className="flex items-center justify-center px-8 py-4 border border-ink/18 text-ink-2 hover:text-ink hover:border-ink/35 font-medium text-base rounded-xl transition-all duration-200 font-display"
+              >
+                Explore VELORA
+              </a>
+            </motion.div>
           </div>
         </motion.div>
       </div>
     </section>
-  );
-};
+  )
+}

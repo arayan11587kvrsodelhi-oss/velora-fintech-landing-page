@@ -1,24 +1,22 @@
-
-
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { TrustSection } from './components/TrustSection';
-import { Features } from './components/Features';
-import { Dashboard } from './components/Dashboard';
-import { Insights } from './components/Insights';
-import { Security } from './components/Security';
-import { VirtualCard } from './components/VirtualCard';
-import { Pricing } from './components/Pricing';
-import { CTA } from './components/CTA';
-import { Footer } from './components/Footer';
+import Navbar from './components/Navbar'
+import Hero from './components/Hero'
+import Trust from './components/Trust'
+import Features from './components/Features'
+import Dashboard from './components/Dashboard'
+import Insights from './components/Insights'
+import Security from './components/Security'
+import VirtualCard from './components/VirtualCard'
+import Pricing from './components/Pricing'
+import CTA from './components/CTA'
+import Footer from './components/Footer'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-velora-bg text-white selection:bg-velora-accent/20 selection:text-velora-accent overflow-x-hidden">
+    <div className="bg-canvas text-ink font-body min-h-screen overflow-x-hidden">
       <Navbar />
       <main>
         <Hero />
-        <TrustSection />
+        <Trust />
         <Features />
         <Dashboard />
         <Insights />
@@ -29,5 +27,5 @@ export default function App() {
       </main>
       <Footer />
     </div>
-  );
+  )
 }

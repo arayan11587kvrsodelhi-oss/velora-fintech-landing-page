@@ -1,207 +1,300 @@
-import { motion, Variants } from 'framer-motion';
-import { ArrowRight, Sparkles, TrendingUp, ShieldCheck, CreditCard, ArrowUpRight, CheckCircle2 } from 'lucide-react';
-import { Button } from './ui/Button';
-import { GlassCard } from './ui/GlassCard';
-import { AnimatedNumber } from './ui/AnimatedNumber';
-import { heroStats } from '../data/fintechData';
+import { motion } from 'framer-motion'
+import { ArrowRight, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 
-export const Hero = () => {
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
-    },
-  };
+/* ── Hero Dashboard preview data ─────────────────────── */
+const recentTx = [
+  { name: 'Salary Credit', amount: '+₹92,000', positive: true },
+  { name: 'Amazon', amount: '-₹3,840', positive: false },
+  { name: 'Swiggy', amount: '-₹620', positive: false },
+]
 
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 25 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
-    },
-  };
+const catBars = [
+  { label: 'Shopping', pct: 38, opacity: 1 },
+  { label: 'Food', pct: 28, opacity: 0.55 },
+  { label: 'Bills', pct: 20, opacity: 0.35 },
+  { label: 'Other', pct: 14, opacity: 0.2 },
+]
 
+/* ── Sparkline SVG ───────────────────────────────────── */
+function Sparkline() {
   return (
-    <section className="relative min-h-screen pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden flex items-center">
-      {/* Background Radial Lights & Grid Accent */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-velora-accent/10 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute top-10 right-10 w-[400px] h-[400px] bg-velora-accent-teal/10 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293d0d_1px,transparent_1px),linear-gradient(to_bottom,#1f293d0d_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
+    <svg
+      viewBox="0 0 220 56"
+      className="w-full h-10"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#34E99E" stopOpacity="0.38" />
+          <stop offset="100%" stopColor="#34E99E" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {/* area fill */}
+      <path
+        d="M0,48 C22,44 38,40 58,36 S82,26 104,22 S132,14 158,10 S184,5 220,2 L220,56 L0,56 Z"
+        fill="url(#sg)"
+      />
+      {/* line */}
+      <path
+        d="M0,48 C22,44 38,40 58,36 S82,26 104,22 S132,14 158,10 S184,5 220,2"
+        fill="none"
+        stroke="#34E99E"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <circle cx="220" cy="2" r="3" fill="#34E99E" />
+      <circle cx="220" cy="2" r="5" fill="#34E99E" opacity="0.25" />
+    </svg>
+  )
+}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+/* ── Dashboard preview card ──────────────────────────── */
+function HeroDashboard() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 32, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.85, delay: 0.35, ease: 'easeOut' }}
+      className="relative w-full max-w-[400px] lg:max-w-[440px]"
+      aria-hidden="true"
+    >
+      {/* ambient glow behind card */}
+      <div
+        className="absolute -inset-6 rounded-[40px] pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(52,233,158,0.09) 0%, transparent 75%)',
+        }}
+      />
 
-          {/* Left Column: Hero Text & CTA */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="lg:col-span-6 text-center lg:text-left z-10"
-          >
-            {/* Pill Badge */}
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-velora-surface border border-velora-accent/30 text-xs font-medium text-slate-200 shadow-inner mb-6">
-              <span className="flex h-2 w-2 rounded-full bg-velora-accent animate-ping" />
-              <Sparkles className="w-3.5 h-3.5 text-velora-accent" />
-              <span>Next-Gen Intelligent Banking Platform</span>
-            </motion.div>
+      {/* Main card */}
+      <div className="relative bg-panel border border-wire rounded-2xl p-5 shadow-2xl shadow-black/70 card-shine">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <svg viewBox="0 0 18 18" fill="none" className="w-4 h-4" aria-hidden="true">
+              <path d="M2 3.5L9 14.5L16 3.5" stroke="#34E99E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M5.5 3.5L9 8.5L12.5 3.5" stroke="#34E99E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+            </svg>
+            <span className="text-xs font-mono text-ink-3 tracking-wider">VELORA</span>
+          </div>
+          <span className="text-[10px] font-mono text-ink-3 bg-panel-2 border border-wire px-2 py-0.5 rounded-md">Aug 2026</span>
+        </div>
 
-            {/* Main Headline */}
-            <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.08] text-white">
-              Your money.{' '}
-              <span className="text-accent-gradient block sm:inline">Your momentum.</span>
-            </motion.h1>
-
-            {/* Subtext */}
-            <motion.p variants={itemVariants} className="mt-6 text-lg sm:text-xl text-velora-muted font-normal max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              One intelligent platform to spend smarter, save effortlessly, and stay in total control of your financial life with real-time AI guidance.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div variants={itemVariants} className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <Button size="lg" icon={<ArrowRight className="w-5 h-5" />} className="w-full sm:w-auto glow-accent">
-                Get Started Free
-              </Button>
-              <Button size="lg" variant="secondary" icon={<ArrowUpRight className="w-5 h-5 text-velora-accent" />} className="w-full sm:w-auto">
-                Explore VELORA
-              </Button>
-            </motion.div>
-
-            {/* Social Trust Highlights */}
-            <motion.div variants={itemVariants} className="mt-10 pt-8 border-t border-velora-border/60 flex items-center justify-center lg:justify-start gap-6 text-xs text-velora-muted font-medium">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-velora-accent" />
-                <span>Zero Hidden Fees</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-velora-accent" />
-                <span>256-Bit Bank Encryption</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-velora-accent" />
-                <span>Instant Setup</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Column: Interactive Floating Financial Composition */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-            className="lg:col-span-6 relative"
-          >
-            <div className="relative mx-auto max-w-lg lg:max-w-none">
-
-              {/* Main Floating Dashboard Card */}
-              <GlassCard glow className="relative z-20 shadow-2xl shadow-black/80 border-white/10 p-6 md:p-8 rounded-3xl backdrop-blur-2xl">
-
-                {/* Header Row */}
-                <div className="flex items-center justify-between pb-6 border-b border-velora-border">
-                  <div>
-                    <span className="text-xs font-semibold text-velora-muted uppercase tracking-wider">Total Portfolio Balance</span>
-                    <div className="text-3xl sm:text-4xl font-extrabold text-white mt-1 flex items-baseline gap-1">
-                      <AnimatedNumber value={heroStats.totalBalance} prefix="₹" decimals={2} />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-velora-accent/10 border border-velora-accent/30 text-velora-accent text-xs font-bold">
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    <span>+14.8% this month</span>
-                  </div>
-                </div>
-
-                {/* Middle Grid Stats */}
-                <div className="grid grid-cols-2 gap-4 py-6">
-                  <div className="p-4 rounded-xl bg-velora-surface-light/60 border border-velora-border">
-                    <span className="text-xs text-velora-muted">Monthly Spending</span>
-                    <div className="text-lg font-bold text-white mt-1">
-                      <AnimatedNumber value={heroStats.monthlySpending} prefix="₹" decimals={2} />
-                    </div>
-                    <div className="mt-2 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-velora-accent h-full rounded-full" style={{ width: '42%' }} />
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-velora-surface-light/60 border border-velora-border">
-                    <span className="text-xs text-velora-muted">Savings Goal</span>
-                    <div className="text-lg font-bold text-white mt-1">
-                      <AnimatedNumber value={heroStats.currentSavings} prefix="₹" decimals={0} />
-                    </div>
-                    <div className="mt-2 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-velora-accent-teal h-full rounded-full" style={{ width: `${heroStats.savingsProgress}%` }} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mini Graph Sparkline Visual */}
-                <div className="pt-2">
-                  <div className="flex justify-between items-center text-xs text-velora-muted mb-2">
-                    <span>6-Month Momentum Trend</span>
-                    <span className="text-velora-accent font-semibold">Active Vault</span>
-                  </div>
-                  <div className="h-16 flex items-end gap-2 px-1">
-                    {[35, 48, 40, 62, 55, 85, 78, 92].map((height, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${height}%` }}
-                        transition={{ duration: 0.8, delay: 0.4 + i * 0.08 }}
-                        className={`flex-1 rounded-t-sm ${i === 7 ? 'bg-gradient-to-t from-velora-accent to-velora-accent-teal shadow-lg shadow-velora-accent/50' : 'bg-slate-700/60'
-                          }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </GlassCard>
-
-              {/* Floating Metallic Card Badge (Bottom Floating Visual) */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -bottom-8 -left-4 sm:-left-8 z-30 hidden sm:block w-64 p-4 rounded-2xl bg-gradient-to-br from-slate-900/90 to-velora-surface/90 border border-velora-accent/30 shadow-2xl backdrop-blur-2xl"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-velora-accent/20 border border-velora-accent/40 flex items-center justify-center">
-                      <CreditCard className="w-4 h-4 text-velora-accent" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">VELORA Metal</div>
-                      <div className="text-[10px] text-velora-muted">Virtual Debit</div>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono text-velora-accent font-semibold">•••• 4829</span>
-                </div>
-                <div className="flex justify-between items-end text-[10px] text-slate-400 font-mono">
-                  <span>ARYAN SHARMA</span>
-                  <span>EXP 09/29</span>
-                </div>
-              </motion.div>
-
-              {/* Floating Shield Status Badge (Top Right Floating Visual) */}
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute -top-6 -right-4 sm:-right-6 z-30 hidden sm:flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/95 border border-velora-border shadow-2xl backdrop-blur-xl"
-              >
-                <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-white">Encrypted & Active</div>
-                  <div className="text-[11px] text-emerald-400 font-medium">Real-time fraud guard</div>
-                </div>
-              </motion.div>
-
+        {/* Balance */}
+        <div className="mb-4">
+          <p className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-1">Total Balance</p>
+          <div className="flex items-end gap-2.5">
+            <span
+              className="font-display font-semibold text-ink leading-none"
+              style={{ fontSize: '30px', letterSpacing: '-0.04em' }}
+            >
+              ₹8,42,190
+            </span>
+            <div className="flex items-center gap-1 pb-0.5 text-mint text-xs font-mono">
+              <TrendingUp size={11} />
+              <span>+12.4%</span>
             </div>
-          </motion.div>
+          </div>
+        </div>
 
+        {/* Sparkline */}
+        <div className="mb-4">
+          <Sparkline />
+        </div>
+
+        {/* Category bars */}
+        <div className="mb-4">
+          <p className="text-[10px] font-mono text-ink-3 mb-2">Spending categories</p>
+          <div className="flex gap-0.5 h-1.5 rounded-full overflow-hidden">
+            {catBars.map((c) => (
+              <div
+                key={c.label}
+                style={{ width: `${c.pct}%`, background: `rgba(52,233,158,${c.opacity})` }}
+              />
+            ))}
+          </div>
+          <div className="flex gap-3 mt-1.5">
+            {catBars.map((c) => (
+              <div key={c.label} className="flex items-center gap-1">
+                <div
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ background: `rgba(52,233,158,${c.opacity})` }}
+                />
+                <span className="text-[9px] font-mono text-ink-3">{c.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-wire mb-3" />
+
+        {/* Transactions */}
+        <p className="text-[10px] font-mono text-ink-3 uppercase tracking-widest mb-2">Recent</p>
+        <div className="space-y-2 mb-4">
+          {recentTx.map((t) => (
+            <div key={t.name} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {t.positive
+                  ? <ArrowUpRight size={11} className="text-mint" />
+                  : <ArrowDownRight size={11} className="text-ink-3" />}
+                <span className="text-xs text-ink-2">{t.name}</span>
+              </div>
+              <span className={`text-xs font-mono font-medium ${t.positive ? 'text-mint' : 'text-ink-2'}`}>
+                {t.amount}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Savings goal */}
+        <div className="bg-panel-2 rounded-xl p-3 border border-wire">
+          <div className="flex justify-between items-center mb-1.5">
+            <span className="text-[10px] text-ink-2">Goal · MacBook Pro</span>
+            <span className="text-[10px] font-mono text-mint">72%</span>
+          </div>
+          <div className="h-1.5 bg-wire rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: '72%' }}
+              transition={{ duration: 1.4, delay: 1.1, ease: 'easeOut' }}
+              className="h-full bg-mint rounded-full"
+            />
+          </div>
         </div>
       </div>
+
+      {/* Floating pill — transfer confirmation */}
+      <motion.div
+        initial={{ opacity: 0, x: 12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
+        className="absolute -right-3 top-20 bg-panel-2 border border-wire rounded-xl px-3 py-2 flex items-center gap-2 shadow-xl"
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse flex-shrink-0" />
+        <span className="text-[11px] text-ink-2 whitespace-nowrap">Transfer sent · ₹12,500</span>
+      </motion.div>
+
+      {/* Floating pill — monthly savings */}
+      <motion.div
+        initial={{ opacity: 0, x: -12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1.4, duration: 0.5 }}
+        className="absolute -left-3 bottom-24 bg-panel-2 border border-wire rounded-xl px-3 py-2 shadow-xl"
+      >
+        <p className="text-[9px] font-mono text-ink-3 mb-0.5">Savings this month</p>
+        <p className="text-sm font-mono font-medium text-mint">↑ ₹41,000</p>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+/* ── Hero section ────────────────────────────────────── */
+export default function Hero() {
+  return (
+    <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute inset-0 hero-glow pointer-events-none" aria-hidden="true" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 55% 45% at 50% 0%, rgba(52,233,158,0.05) 0%, transparent 100%)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16 min-h-[calc(100vh-64px)] py-16 lg:py-0">
+
+          {/* ── Left: Copy ─────────────────────── */}
+          <div className="flex-1 max-w-xl lg:max-w-none">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-mint-dim border border-mint/20 rounded-full mb-8"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse" />
+              <span className="text-xs font-mono text-mint tracking-wide">Now in early access</span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.18, ease: 'easeOut' }}
+              className="font-display font-semibold text-ink leading-[1.04] mb-6"
+              style={{ fontSize: 'clamp(44px, 6.5vw, 82px)', letterSpacing: '-0.04em' }}
+            >
+              Your money.
+              <br />
+              <span className="text-mint">Your momentum.</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-lg text-ink-2 leading-relaxed mb-10 max-w-lg"
+            >
+              One intelligent platform to spend smarter, save effortlessly, and stay in control of your financial life.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 0.42 }}
+              className="flex flex-col sm:flex-row gap-3 mb-10"
+            >
+              <button
+                className="group flex items-center justify-center gap-2 px-7 py-3.5 bg-mint text-canvas font-semibold text-[15px] rounded-xl hover:bg-mint/92 transition-all duration-200 hover:scale-[0.98] active:scale-95 font-display"
+              >
+                Get Started
+                <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+              </button>
+              <a
+                href="#features"
+                className="flex items-center justify-center gap-2 px-7 py-3.5 border border-wire-2 text-ink-2 hover:text-ink hover:border-ink-3 font-medium text-[15px] rounded-xl transition-all duration-200 font-display"
+              >
+                Explore VELORA
+              </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex items-center gap-3 text-sm text-ink-3"
+            >
+              <div className="flex -space-x-1.5">
+                {['AS', 'PK', 'RV', 'NM'].map((init) => (
+                  <div
+                    key={init}
+                    className="w-6 h-6 rounded-full bg-mint-dim border border-canvas flex items-center justify-center"
+                  >
+                    <span className="text-[7px] font-mono text-mint">{init}</span>
+                  </div>
+                ))}
+              </div>
+              <span>Interactive Demo · Built for modern financial control</span>
+            </motion.div>
+          </div>
+
+          {/* ── Right: Dashboard preview ────────── */}
+          <div className="flex-1 flex justify-center lg:justify-end w-full">
+            <HeroDashboard />
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom fade into next section */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, transparent, var(--color-canvas))' }}
+        aria-hidden="true"
+      />
     </section>
-  );
-};
+  )
+}

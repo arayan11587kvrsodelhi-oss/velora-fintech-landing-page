@@ -1,4 +1,24 @@
 node_modules/
 dist/
-.env
-.env.local
+build/
+.cache/
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+*-debug.log*
+logs/
+*.log
+.claude-replay.*
+.tmp-*
+
+# Figma Make / IDE dev state
+.figma/
+.mcp.json
+.mise.toml
+AGENTS.md
+CLAUDE.md
+
+/.plugins/
+/.opencode-skills/
+

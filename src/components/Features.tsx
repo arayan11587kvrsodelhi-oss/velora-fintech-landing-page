@@ -1,224 +1,231 @@
-import { motion } from 'framer-motion';
-import { SectionHeading } from './ui/SectionHeading';
-import { GlassCard } from './ui/GlassCard';
-import { PieChart, PiggyBank, Zap, Sparkles, ArrowUpRight, CheckCircle2 } from 'lucide-react';
-import { spendingCategories } from '../data/fintechData';
+import { motion, type MotionProps } from 'framer-motion'
+import { Zap, Target, ArrowUpRight, BarChart3 } from 'lucide-react'
 
-export const Features = () => {
+const fadeUp: MotionProps = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.55, ease: 'easeOut' },
+}
+
+function SpendingVisual() {
+  const bars = [
+    { label: 'Food', pct: 28, active: false },
+    { label: 'Shopping', pct: 62, active: true },
+    { label: 'Transport', pct: 18, active: false },
+    { label: 'Bills', pct: 41, active: false },
+    { label: 'Entmt.', pct: 22, active: false },
+  ]
   return (
-    <section id="features" className="py-24 md:py-32 relative overflow-hidden">
-      {/* Background Accent Lights */}
-      <div className="absolute top-1/3 left-0 w-[500px] h-[500px] bg-velora-accent/5 rounded-full blur-[140px] pointer-events-none -z-10" />
-      <div className="absolute bottom-10 right-0 w-[500px] h-[500px] bg-velora-accent-teal/5 rounded-full blur-[140px] pointer-events-none -z-10" />
+    <div className="mt-6 space-y-2.5">
+      {bars.map((b) => (
+        <div key={b.label}>
+          <div className="flex justify-between mb-1">
+            <span className="text-xs text-ink-3">{b.label}</span>
+            <span className="text-xs font-mono text-ink-2">{b.pct}%</span>
+          </div>
+          <div className="h-1.5 bg-wire rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: `${b.pct}%` }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+              className="h-full rounded-full"
+              style={{ background: b.active ? '#34E99E' : 'rgba(52,233,158,0.28)' }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          badge="Core Capabilities"
-          title="Everything you need."
-          highlightText="Nothing you don't."
-          subtitle="Designed with precision for modern high-performers who demand speed, clarity, and absolute security over their wealth."
+function SavingsVisual() {
+  return (
+    <div className="mt-6">
+      <div className="flex items-end justify-between mb-2">
+        <div>
+          <p className="text-xs text-ink-3 mb-0.5">Emergency Fund</p>
+          <p className="text-xl font-mono font-medium text-ink">₹1,40,000</p>
+        </div>
+        <span className="text-xs font-mono text-mint bg-mint-dim px-2 py-1 rounded-lg">On track</span>
+      </div>
+      <div className="h-2 bg-wire rounded-full overflow-hidden mb-3">
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: '58%' }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, delay: 0.2, ease: 'easeOut' }}
+          className="h-full bg-mint rounded-full"
         />
+      </div>
+      <p className="text-xs text-ink-3">₹1,00,000 remaining · 4 months ahead</p>
+      <div className="mt-4 space-y-2">
+        {['MacBook Pro', 'Vacation Fund', 'Retirement'].map((goal, i) => (
+          <div key={goal} className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ background: `rgba(52,233,158,${1 - i * 0.25})` }} />
+              <span className="text-ink-2">{goal}</span>
+            </div>
+            <span className="font-mono text-ink-3">{[72, 45, 31][i]}%</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-        {/* Features Grid - Asymmetric Distinct Card Designs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+function TransferVisual() {
+  return (
+    <div className="mt-6">
+      <div className="space-y-3">
+        <div className="bg-panel-3 rounded-xl p-3 border border-wire">
+          <p className="text-xs text-ink-3 mb-1">From</p>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-ink">VELORA · 4829</span>
+            <span className="text-sm font-mono text-ink">₹12,500</span>
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <div className="w-7 h-7 rounded-full bg-mint-dim border border-mint/20 flex items-center justify-center">
+            <ArrowUpRight size={12} className="text-mint" />
+          </div>
+        </div>
+        <div className="bg-panel-3 rounded-xl p-3 border border-wire">
+          <p className="text-xs text-ink-3 mb-1">To</p>
+          <span className="text-sm text-ink">Priya Sharma · HDFC ****2201</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse" />
+          <span className="text-xs text-ink-3">Instant · Usually within seconds</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-          {/* Card 1: Smart Spending (Interactive Category Visual) */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6 }}
+function IntelligenceVisual() {
+  const insights = [
+    { label: 'Dining down', value: '12%', dir: '↓', good: true },
+    { label: 'Savings ahead', value: '₹8,200', dir: '↑', good: true },
+    { label: 'Subscriptions', value: '₹1,298', dir: '↑', good: false },
+  ]
+  return (
+    <div className="mt-6 grid grid-cols-3 gap-3">
+      {insights.map((ins) => (
+        <div key={ins.label} className="bg-panel-3 rounded-xl p-3 border border-wire">
+          <p className="text-[10px] text-ink-3 mb-2 leading-tight">{ins.label}</p>
+          <p className={`text-base font-mono font-medium ${ins.good ? 'text-mint' : 'text-warning'}`}>
+            {ins.dir} {ins.value}
+          </p>
+        </div>
+      ))}
+      <div className="col-span-3 bg-mint-dim border border-mint/15 rounded-xl p-3">
+        <p className="text-xs text-ink-2 leading-relaxed">
+          You're spending <span className="text-mint font-medium">18% less</span> this month than your 3-month average.
+          Your savings are trending ahead of target.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export default function Features() {
+  return (
+    <section id="features" className="py-24 lg:py-32">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <motion.div {...fadeUp} className="mb-14 max-w-xl">
+          <p className="text-xs font-mono text-ink-3 uppercase tracking-[0.16em] mb-4">Features</p>
+          <h2
+            className="font-display font-semibold text-ink leading-tight"
+            style={{ fontSize: 'clamp(32px, 4vw, 52px)', letterSpacing: '-0.03em' }}
           >
-            <GlassCard className="h-full flex flex-col justify-between p-8 border-velora-border hover:border-velora-accent/40 group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-velora-accent/10 border border-velora-accent/30 flex items-center justify-center text-velora-accent group-hover:scale-110 transition-transform">
-                    <PieChart className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-velora-accent border border-velora-accent/20">
-                    Real-time
-                  </span>
-                </div>
+            Financial tools that actually work for you.
+          </h2>
+        </motion.div>
 
-                <h3 className="text-2xl font-bold text-white mb-3">Smart Spending</h3>
-                <p className="text-velora-muted leading-relaxed mb-6">
-                  Understand where your money goes with instant categorize tags, automated receipts, and real-time spending insights.
-                </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <motion.div
+            {...fadeUp}
+            transition={{ duration: 0.55, delay: 0.05, ease: "easeOut" }}
+            className="lg:col-span-2 bg-panel border border-wire rounded-2xl p-7 hover:border-wire-2 transition-colors duration-300 group card-shine"
+          >
+            <div className="flex items-start justify-between mb-2">
+              <div className="w-9 h-9 rounded-xl bg-mint-dim flex items-center justify-center border border-mint/15">
+                <BarChart3 size={17} className="text-mint" />
               </div>
-
-              {/* Unique Visual for Card 1 */}
-              <div className="mt-4 p-5 rounded-xl bg-velora-surface-light/80 border border-velora-border/80 space-y-3">
-                <div className="flex justify-between text-xs font-semibold text-slate-300">
-                  <span>Top Categories</span>
-                  <span className="text-velora-accent">Active Sync</span>
-                </div>
-                {spendingCategories.slice(0, 3).map((cat) => (
-                  <div key={cat.name} className="space-y-1">
-                    <div className="flex justify-between text-xs text-slate-400">
-                      <span>{cat.name}</span>
-                      <span className="font-mono text-white font-medium">₹{cat.amount.toLocaleString('en-IN')} ({cat.percentage}%)</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-1000"
-                        style={{ width: `${cat.percentage}%`, backgroundColor: cat.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+              <span className="text-xs font-mono text-ink-3 bg-panel-2 px-2 py-1 rounded-lg border border-wire" aria-hidden="true">01</span>
+            </div>
+            <h3 className="font-display font-semibold text-ink text-xl mt-4 mb-1" style={{ letterSpacing: '-0.02em' }}>
+              Smart Spending
+            </h3>
+            <p className="text-sm text-ink-2 leading-relaxed">
+              Understand where your money goes with real-time spending insights across every category.
+            </p>
+            <SpendingVisual />
           </motion.div>
 
-          {/* Card 2: Automated Savings (Goal Gauge Visual) */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            {...fadeUp}
+            transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
+            className="bg-panel border border-wire rounded-2xl p-7 hover:border-wire-2 transition-colors duration-300 group card-shine"
           >
-            <GlassCard className="h-full flex flex-col justify-between p-8 border-velora-border hover:border-velora-accent/40 group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                    <PiggyBank className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-emerald-400 border border-emerald-500/20">
-                    Auto-Stash
-                  </span>
-                </div>
-
-                <h3 className="text-2xl font-bold text-white mb-3">Automated Savings</h3>
-                <p className="text-velora-muted leading-relaxed mb-6">
-                  Set dynamic goals and let VELORA’s automated round-ups and smart rules build better saving habits effortlessly.
-                </p>
+            <div className="flex items-start justify-between mb-2">
+              <div className="w-9 h-9 rounded-xl bg-mint-dim flex items-center justify-center border border-mint/15">
+                <Target size={17} className="text-mint" />
               </div>
-
-              {/* Unique Visual for Card 2 */}
-              <div className="mt-4 p-5 rounded-xl bg-velora-surface-light/80 border border-velora-border/80">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <div className="text-xs text-velora-muted">Tokyo Travel Vault</div>
-                    <div className="text-xl font-extrabold text-white font-mono">₹4,10,000 / ₹5,00,000</div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-sm font-bold text-emerald-400 font-mono">82%</span>
-                  </div>
-                </div>
-                <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/5">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '82%' }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, ease: 'easeOut' }}
-                    className="h-full bg-gradient-to-r from-emerald-500 to-velora-accent rounded-full"
-                  />
-                </div>
-                <div className="mt-3 flex items-center justify-between text-[11px] text-velora-muted">
-                  <span className="flex items-center gap-1 text-slate-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    Round-ups active (+₹420 today)
-                  </span>
-                  <span className="text-velora-accent font-semibold hover:underline cursor-pointer">Adjust Rule</span>
-                </div>
-              </div>
-            </GlassCard>
+              <span className="text-xs font-mono text-ink-3 bg-panel-2 px-2 py-1 rounded-lg border border-wire" aria-hidden="true">02</span>
+            </div>
+            <h3 className="font-display font-semibold text-ink text-xl mt-4 mb-1" style={{ letterSpacing: '-0.02em' }}>
+              Automated Savings
+            </h3>
+            <p className="text-sm text-ink-2 leading-relaxed">
+              Set goals and build better saving habits automatically.
+            </p>
+            <SavingsVisual />
           </motion.div>
 
-          {/* Card 3: Instant Transfers (Lightning Timeline Visual) */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            {...fadeUp}
+            transition={{ duration: 0.55, delay: 0.15, ease: "easeOut" }}
+            className="bg-panel border border-wire rounded-2xl p-7 hover:border-wire-2 transition-colors duration-300 group card-shine"
           >
-            <GlassCard className="h-full flex flex-col justify-between p-8 border-velora-border hover:border-velora-accent/40 group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
-                    <Zap className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-cyan-400 border border-cyan-500/20">
-                    0.1s Settlement
-                  </span>
-                </div>
-
-                <h3 className="text-2xl font-bold text-white mb-3">Instant Transfers</h3>
-                <p className="text-velora-muted leading-relaxed mb-6">
-                  Move money globally and locally with zero friction, instant notifications, and bank-grade encryption rails.
-                </p>
+            <div className="flex items-start justify-between mb-2">
+              <div className="w-9 h-9 rounded-xl bg-mint-dim flex items-center justify-center border border-mint/15">
+                <ArrowUpRight size={17} className="text-mint" />
               </div>
-
-              {/* Unique Visual for Card 3 */}
-              <div className="mt-4 p-5 rounded-xl bg-velora-surface-light/80 border border-velora-border/80">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-slate-900/80 border border-velora-border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xs">
-                      AS
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">Aryan Sharma</div>
-                      <div className="text-[10px] text-slate-400">UPI / IMPS Rail Active</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-bold text-emerald-400 font-mono">₹85,000.00</div>
-                    <div className="text-[10px] text-emerald-400 flex items-center justify-end gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Settled
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
+              <span className="text-xs font-mono text-ink-3 bg-panel-2 px-2 py-1 rounded-lg border border-wire" aria-hidden="true">03</span>
+            </div>
+            <h3 className="font-display font-semibold text-ink text-xl mt-4 mb-1" style={{ letterSpacing: '-0.02em' }}>
+              Instant Transfers
+            </h3>
+            <p className="text-sm text-ink-2 leading-relaxed">
+              Move money quickly and securely whenever you need it.
+            </p>
+            <TransferVisual />
           </motion.div>
 
-          {/* Card 4: Financial Intelligence (AI Insight Widget Visual) */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6, delay: 0.45 }}
+            {...fadeUp}
+            transition={{ duration: 0.55, delay: 0.2, ease: "easeOut" }}
+            className="lg:col-span-2 bg-panel border border-wire rounded-2xl p-7 hover:border-wire-2 transition-colors duration-300 group card-shine"
           >
-            <GlassCard className="h-full flex flex-col justify-between p-8 border-velora-border hover:border-velora-accent/40 group">
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                    <Sparkles className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 text-purple-400 border border-purple-500/20">
-                    VELORA AI
-                  </span>
-                </div>
-
-                <h3 className="text-2xl font-bold text-white mb-3">Financial Intelligence</h3>
-                <p className="text-velora-muted leading-relaxed mb-6">
-                  Turn raw transaction streams into actionable, high-value financial recommendations and budget optimizations.
-                </p>
+            <div className="flex items-start justify-between mb-2">
+              <div className="w-9 h-9 rounded-xl bg-mint-dim flex items-center justify-center border border-mint/15">
+                <Zap size={17} className="text-mint" />
               </div>
-
-              {/* Unique Visual for Card 4 */}
-              <div className="mt-4 p-5 rounded-xl bg-gradient-to-br from-purple-950/40 to-velora-surface-light border border-purple-500/20">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-purple-500/20 text-purple-300 shrink-0">
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-purple-200">Smart Alert</div>
-                    <p className="text-xs text-slate-300 mt-1 leading-snug">
-                      "You spent 18% less on subscriptions this month. You're ₹8,400 ahead of your goal."
-                    </p>
-                    <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-velora-accent cursor-pointer hover:underline">
-                      <span>Apply recommended re-investment</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
+              <span className="text-xs font-mono text-ink-3 bg-panel-2 px-2 py-1 rounded-lg border border-wire" aria-hidden="true">04</span>
+            </div>
+            <h3 className="font-display font-semibold text-ink text-xl mt-4 mb-1" style={{ letterSpacing: '-0.02em' }}>
+              Financial Intelligence
+            </h3>
+            <p className="text-sm text-ink-2 leading-relaxed">
+              Turn your financial activity into insights you can actually use — not just numbers to ignore.
+            </p>
+            <IntelligenceVisual />
           </motion.div>
-
         </div>
       </div>
     </section>
-  );
-};
+  )
+}

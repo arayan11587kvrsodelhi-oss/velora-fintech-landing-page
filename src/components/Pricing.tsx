@@ -1,109 +1,211 @@
-import { motion } from 'framer-motion';
-import { SectionHeading } from './ui/SectionHeading';
-import { GlassCard } from './ui/GlassCard';
-import { Button } from './ui/Button';
-import { pricingPlans } from '../data/fintechData';
-import { Check, Sparkles, ArrowRight } from 'lucide-react';
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Check, ArrowRight } from 'lucide-react'
 
-export const Pricing = () => {
+const plans = [
+  {
+    name: 'Free',
+    monthly: '₹0',
+    annual: '₹0',
+    period: 'forever',
+    desc: 'Start tracking your finances with no commitment.',
+    features: [
+      'Basic spending tracking',
+      'Up to 2 savings goals',
+      'Monthly spending insights',
+      'Standard virtual card',
+      'Email support',
+    ],
+    cta: 'Get started free',
+    highlight: false,
+    badge: null,
+  },
+  {
+    name: 'Pro',
+    monthly: '₹299',
+    annual: '₹249',
+    period: 'per month',
+    desc: 'For people serious about their financial momentum.',
+    features: [
+      'Real-time spending insights',
+      'Unlimited savings goals',
+      'Advanced financial analytics',
+      'Smart monthly summaries',
+      'Premium virtual card',
+      'Priority support',
+    ],
+    cta: 'Start Pro',
+    highlight: true,
+    badge: 'Most popular',
+  },
+  {
+    name: 'Business',
+    monthly: 'Custom',
+    annual: 'Custom',
+    period: 'tailored pricing',
+    desc: 'For teams managing complex financial workflows.',
+    features: [
+      'Everything in Pro',
+      'Team member access',
+      'Advanced reporting',
+      'Custom categories',
+      'Dedicated account manager',
+      'API access',
+    ],
+    cta: 'Contact sales',
+    highlight: false,
+    badge: null,
+  },
+]
+
+export default function Pricing() {
+  const [annual, setAnnual] = useState(false)
+
   return (
-    <section id="pricing" className="py-24 md:py-32 relative overflow-hidden bg-velora-bg">
-      {/* Background Accent Gradient Lights */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-velora-accent/5 rounded-full blur-[180px] pointer-events-none -z-10" />
+    <section id="pricing" className="py-24 lg:py-32 bg-panel/30 border-t border-wire">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          badge="Transparent Pricing"
-          title="Predictable plans for"
-          highlightText="every ambition."
-          subtitle="Choose the tier that matches your wealth momentum. No surprise markups or hidden fees."
-        />
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-14"
+        >
+          <p className="text-[11px] font-mono text-ink-3 uppercase tracking-[0.18em] mb-4">Pricing</p>
+          <h2
+            className="font-display font-semibold text-ink leading-tight mb-4"
+            style={{ fontSize: 'clamp(32px, 4vw, 52px)', letterSpacing: '-0.03em' }}
+          >
+            Simple, honest pricing.
+          </h2>
+          <p className="text-base text-ink-2 max-w-sm mx-auto mb-8 leading-relaxed">
+            Start free. Upgrade when you're ready. No hidden fees.
+          </p>
 
-        {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-          {pricingPlans.map((plan, index) => {
-            const isPro = plan.highlighted;
+          {/* Toggle */}
+          <div className="inline-flex items-center gap-3 bg-panel border border-wire rounded-xl p-1">
+            <button
+              onClick={() => setAnnual(false)}
+              className={`px-5 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                !annual ? 'bg-panel-3 text-ink shadow-sm' : 'text-ink-3 hover:text-ink-2'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setAnnual(true)}
+              className={`px-5 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                annual ? 'bg-panel-3 text-ink shadow-sm' : 'text-ink-3 hover:text-ink-2'
+              }`}
+            >
+              Annual
+              <span className="text-[10px] font-mono text-mint bg-mint-dim border border-mint/15 px-1.5 py-0.5 rounded-md">
+                −17%
+              </span>
+            </button>
+          </div>
+        </motion.div>
 
-            return (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.6, delay: index * 0.15 }}
-                className="flex flex-col"
-              >
-                <GlassCard
-                  glow={isPro}
-                  className={`h-full p-8 flex flex-col justify-between relative transition-all duration-300 ${isPro
-                      ? 'border-velora-accent/50 bg-gradient-to-b from-velora-surface-light via-velora-surface to-velora-surface/90 shadow-2xl shadow-velora-accent/15 lg:-translate-y-2'
-                      : 'border-velora-border hover:border-velora-border-bright'
-                    }`}
-                >
-                  {/* Highlighted Badge */}
-                  {isPro && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-velora-accent to-velora-accent-teal text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg shadow-velora-accent/30 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 fill-slate-950" />
-                      <span>{plan.badge || 'Most Popular'}</span>
-                    </div>
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+          {plans.map((plan, i) => (
+            <motion.div
+              key={plan.name}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.08 * i }}
+              className={`relative rounded-2xl p-6 flex flex-col border transition-colors duration-300 ${
+                plan.highlight
+                  ? 'bg-panel-2 border-mint/22 shadow-xl shadow-mint/4'
+                  : 'bg-panel border-wire hover:border-wire-2'
+              }`}
+            >
+              {/* Popular badge */}
+              {plan.badge && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="text-[10px] font-mono font-semibold text-canvas bg-mint px-3 py-1 rounded-full">
+                    {plan.badge}
+                  </span>
+                </div>
+              )}
+
+              {/* Plan name + indicator */}
+              <div className="flex items-center justify-between mb-5">
+                <span className="font-display font-semibold text-ink text-base">{plan.name}</span>
+                {plan.highlight && <div className="w-1.5 h-1.5 rounded-full bg-mint" />}
+              </div>
+
+              {/* Price */}
+              <div className="mb-5">
+                <div className="flex items-baseline gap-1.5 mb-0.5">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={annual ? 'annual' : 'monthly'}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      transition={{ duration: 0.2 }}
+                      className="font-mono font-medium text-ink"
+                      style={{ fontSize: plan.monthly === 'Custom' ? '22px' : '30px', letterSpacing: '-0.03em' }}
+                    >
+                      {annual ? plan.annual : plan.monthly}
+                    </motion.span>
+                  </AnimatePresence>
+                  {plan.monthly !== 'Custom' && (
+                    <span className="text-xs text-ink-3 font-mono">{plan.period}</span>
                   )}
+                </div>
+                {plan.monthly === 'Custom' && (
+                  <span className="text-xs text-ink-3 font-mono">{plan.period}</span>
+                )}
+                <p className="text-xs text-ink-2 mt-2 leading-relaxed">{plan.desc}</p>
+              </div>
 
-                  <div>
-                    {/* Header */}
-                    <div className="mb-6">
-                      <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
-                      <p className="text-xs text-velora-muted leading-relaxed min-h-[36px]">
-                        {plan.description}
-                      </p>
+              {/* Features */}
+              <ul className="space-y-2.5 mb-7 flex-1" aria-label={`${plan.name} plan features`}>
+                {plan.features.map((feat) => (
+                  <li key={feat} className="flex items-center gap-2.5">
+                    <div
+                      className={`w-4 h-4 rounded-md flex items-center justify-center flex-shrink-0 ${
+                        plan.highlight ? 'bg-mint-dim' : 'bg-panel-2'
+                      }`}
+                    >
+                      <Check
+                        size={9}
+                        className={plan.highlight ? 'text-mint' : 'text-ink-3'}
+                        strokeWidth={3}
+                        aria-hidden="true"
+                      />
                     </div>
+                    <span className="text-sm text-ink-2">{feat}</span>
+                  </li>
+                ))}
+              </ul>
 
-                    {/* Price Display */}
-                    <div className="flex items-baseline gap-1 pb-8 mb-8 border-b border-velora-border/60">
-                      <span className="text-4xl sm:text-5xl font-extrabold text-white font-mono tracking-tight">
-                        {plan.price}
-                      </span>
-                      {plan.period && (
-                        <span className="text-sm font-medium text-velora-muted">{plan.period}</span>
-                      )}
-                    </div>
-
-                    {/* Feature List */}
-                    <div className="space-y-3.5 mb-8">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                        What's Included:
-                      </span>
-                      {plan.features.map((feat) => (
-                        <div key={feat} className="flex items-start gap-3 text-xs sm:text-sm text-slate-300">
-                          <div className={`p-1 rounded-full shrink-0 mt-0.5 ${isPro ? 'bg-velora-accent/20 text-velora-accent' : 'bg-slate-800 text-slate-400'
-                            }`}>
-                            <Check className="w-3.5 h-3.5" />
-                          </div>
-                          <span className="leading-tight">{feat}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* CTA Button */}
-                  <Button
-                    variant={isPro ? 'primary' : 'secondary'}
-                    size="lg"
-                    icon={<ArrowRight className="w-4 h-4" />}
-                    className="w-full justify-center mt-auto"
-                  >
-                    {plan.cta}
-                  </Button>
-                </GlassCard>
-              </motion.div>
-            );
-          })}
+              {/* CTA */}
+              <button
+                className={`w-full py-3 text-sm font-semibold font-display rounded-xl transition-all duration-200 hover:scale-[0.98] active:scale-95 flex items-center justify-center gap-2 group ${
+                  plan.highlight
+                    ? 'bg-mint text-canvas hover:bg-mint/90'
+                    : 'bg-panel-3 border border-wire text-ink hover:border-wire-2'
+                }`}
+              >
+                {plan.cta}
+                {plan.highlight && (
+                  <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                )}
+              </button>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Demo Disclaimer */}
-        <div className="mt-12 text-center text-xs text-velora-muted font-mono">
-          * Fictional demo pricing for portfolio demonstration purposes only.
-        </div>
+        <p className="text-center text-[11px] text-ink-3 mt-8 font-mono">
+          VELORA is a fictional demo project · All pricing is illustrative only
+        </p>
       </div>
     </section>
-  );
-};
+  )
+}
