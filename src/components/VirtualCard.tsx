@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, Eye, EyeOff } from 'lucide-react'
+import { formatINR, useFinance } from '../hooks/useFinance'
 
 function ChipSVG() {
   return (
@@ -27,6 +28,7 @@ function ContactlessSVG() {
 
 export default function VirtualCard() {
   const [revealed, setRevealed] = useState(false)
+  const finance = useFinance()
 
   return (
     <section id="card" className="py-24 lg:py-32 border-t border-wire">
@@ -151,9 +153,9 @@ export default function VirtualCard() {
               </div>
             </motion.div>
 
-            <div className="mt-5 flex items-center gap-2 text-xs text-ink-3 font-mono">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs text-ink-3 font-mono">
               <Lock size={11} />
-              <span>Card details are encrypted and secured</span>
+              <span>{finance.cardFrozen ? 'Card frozen for demo' : `Available balance · ${formatINR(finance.balance)}`}</span>
             </div>
           </motion.div>
         </div>

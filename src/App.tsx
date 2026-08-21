@@ -10,11 +10,13 @@ import Pricing from './components/Pricing'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
 import SmoothScroll from './components/SmoothScroll'
+import { FinanceProvider } from './hooks/useFinance'
 
 export default function App() {
   return (
     <SmoothScroll>
-      <div className="bg-canvas text-ink font-body min-h-screen overflow-x-hidden">
+      <FinanceProvider>
+        <div className="bg-canvas text-ink font-body min-h-screen overflow-x-hidden">
         <Navbar />
         <main>
           <Hero />
@@ -28,7 +30,8 @@ export default function App() {
           <CTA />
         </main>
         <Footer />
-      </div>
+        </div>
+      </FinanceProvider>
     </SmoothScroll>
   )
 }

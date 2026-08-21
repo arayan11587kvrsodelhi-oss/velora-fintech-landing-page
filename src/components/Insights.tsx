@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingDown, Target, BarChart3, ArrowRight } from 'lucide-react'
 import DemoModal from './DemoModal'
+import { formatINR, useFinance } from '../hooks/useFinance'
 
 const insightCards = [
   {
@@ -29,6 +30,10 @@ const insightCards = [
 
 export default function Insights() {
   const [modalOpen, setModalOpen] = useState(false)
+  const finance = useFinance()
+  const spendingByCategory = useMemo(() => finance.transactions.filter((transaction) => transaction.type === 'expense').reduce<Record<string, number>>((totals, transaction) => ({ ...totals, [transaction.category]: (totals[transaction.category] || 0) + Math.abs(transaction.amount) }), {}), [finance.transactions])
+  const savingsRate = finance.income ? Math.max(0, Math.round(((finance.income - finance.expenses) / finance.income) * 100)) : 0
+  const totalSpending = Object.values(spendingByCategory).reduce((total, amount) => total + amount, 0)
   return (
     <section id="insights" className="py-24 lg:py-32 border-t border-wire">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -52,24 +57,24 @@ export default function Insights() {
                 className="font-display font-semibold text-ink leading-[1.1] mb-4"
                 style={{ fontSize: 'clamp(28px, 3.5vw, 48px)', letterSpacing: '-0.03em' }}
               >
-                You spent{' '}
-                <span className="text-mint">18% less</span>
-                {' '}this month.
+                You saved{' '}
+                <span className="text-mint">{savingsRate}%</span>
+                {' '}of your income.
               </h2>
               <p className="text-base text-ink-2 leading-relaxed">
-                You're ahead of your monthly savings target. Every decision this month moved you closer to your goals.
+                Your demo data shows {formatINR(totalSpending)} in spending across {Object.keys(spendingByCategory).length} categories.
               </p>
             </div>
 
             <div className="bg-panel border border-wire rounded-2xl p-5 mb-6">
               <div className="flex justify-between items-end mb-1">
                 <span className="text-xs text-ink-3 font-mono">Budget used</span>
-                <span className="text-xs font-mono text-mint">62%</span>
+                  <span className="text-xs font-mono text-mint">{finance.income ? Math.round((finance.expenses / finance.income) * 100) : 0}%</span>
               </div>
               <div className="h-2 bg-wire rounded-full overflow-hidden mb-3">
-                <motion.div
+                  <motion.div
                   initial={{ width: 0 }}
-                  whileInView={{ width: '62%' }}
+                    whileInView={{ width: `${finance.income ? Math.min(100, (finance.expenses / finance.income) * 100) : 0}%` }}
                   viewport={{ once: true }}
                   transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
                   className="h-full bg-mint rounded-full"
@@ -77,12 +82,12 @@ export default function Insights() {
               </div>
               <div className="flex justify-between">
                 <div>
-                  <p className="text-xl font-mono font-medium text-ink">₹38,420</p>
-                  <p className="text-xs text-ink-3">of ₹62,000 budget</p>
+                  <p className="text-xl font-mono font-medium text-ink">{formatINR(finance.expenses)}</p>
+                  <p className="text-xs text-ink-3">total expenses</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-mono font-medium text-mint">₹23,580</p>
-                  <p className="text-xs text-ink-3">remaining</p>
+                  <p className="text-xl font-mono font-medium text-mint">{formatINR(Math.max(0, finance.income - finance.expenses))}</p>
+                  <p className="text-xs text-ink-3">after expenses</p>
                 </div>
               </div>
             </div>

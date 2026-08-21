@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   AreaChart,
@@ -20,7 +20,14 @@ import {
   TrendingDown,
   ArrowUpRight,
   ArrowDownRight,
+  Plus,
+  Send,
+  WalletCards,
+  RotateCcw,
 } from 'lucide-react'
+import { useFinance, formatINR } from '../hooks/useFinance'
+import FinanceModal, { type FinanceModalMode } from './FinanceModal'
+import type { FinanceOperationResult } from '../types/finance'
 
 /* ── Data ─────────────────────────────────────────────── */
 const chartData = [
@@ -32,23 +39,6 @@ const chartData = [
   { month: 'Aug', income: 92, expenses: 38 },
 ]
 
-const transactions = [
-  { id: 1, name: 'Salary Credit',   cat: 'Income',        amount: '+₹92,000', positive: true,  date: 'Aug 1',  initials: 'SC' },
-  { id: 2, name: 'Amazon',          cat: 'Shopping',       amount: '-₹3,840',  positive: false, date: 'Aug 3',  initials: 'AM' },
-  { id: 3, name: 'Swiggy',          cat: 'Food',           amount: '-₹620',    positive: false, date: 'Aug 4',  initials: 'SW' },
-  { id: 4, name: 'Spotify',         cat: 'Entertainment',  amount: '-₹199',    positive: false, date: 'Aug 5',  initials: 'SP' },
-  { id: 5, name: 'Electricity Bill',cat: 'Bills',          amount: '-₹1,840',  positive: false, date: 'Aug 6',  initials: 'EB' },
-  { id: 6, name: 'Uber',            cat: 'Transport',      amount: '-₹340',    positive: false, date: 'Aug 7',  initials: 'UB' },
-]
-
-const categories = [
-  { name: 'Shopping',      pct: 38, amount: '₹14,600' },
-  { name: 'Food',          pct: 28, amount: '₹10,760' },
-  { name: 'Bills',         pct: 20, amount: '₹7,684'  },
-  { name: 'Transport',     pct: 8,  amount: '₹3,074'  },
-  { name: 'Entertainment', pct: 6,  amount: '₹2,302'  },
-]
-
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview'  },
   { icon: Activity,        label: 'Activity'  },
@@ -56,13 +46,6 @@ const navItems = [
   { icon: PiggyBank,       label: 'Savings'   },
   { icon: Lightbulb,       label: 'Insights'  },
   { icon: Settings,        label: 'Settings'  },
-]
-
-const stats = [
-  { label: 'Total Balance',    value: '₹8,42,190', change: '+12.4%', up: true,  large: true  },
-  { label: 'Monthly Income',   value: '₹92,000',   change: '+0%',    up: true,  large: false },
-  { label: 'Monthly Expenses', value: '₹38,420',   change: '-18.2%', up: false, large: false },
-  { label: 'Savings',          value: '₹2,14,800', change: '+41.6%', up: true,  large: false },
 ]
 
 interface TooltipPayloadItem {
@@ -177,6 +160,50 @@ function DashboardContext({ activeNav }: { activeNav: string }) {
 /* ── Component ─────────────────────────────────────────── */
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState('Overview')
+  const [modalMode, setModalMode] = useState<FinanceModalMode | null>(null)
+  const [activeFilter, setActiveFilter] = useState('All')
+  const [toast, setToast] = useState('')
+  const finance = useFinance()
+  const categoryTotals = useMemo(() => {
+    const totals = new Map<string, number>()
+    finance.transactions.filter((transaction) => transaction.type === 'expense').forEach((transaction) => {
+      totals.set(transaction.category, (totals.get(transaction.category) || 0) + Math.abs(transaction.amount))
+    })
+    const total = [...totals.values()].reduce((sum, amount) => sum + amount, 0) || 1
+    return [...totals.entries()].map(([name, amount]) => ({ name, amount, pct: Math.round((amount / total) * 100) })).sort((a, b) => b.amount - a.amount)
+  }, [finance.transactions])
+  const visibleTransactions = finance.transactions.filter((transaction) => activeFilter === 'All' || (activeFilter === 'Income' ? transaction.type === 'income' : transaction.type === 'expense'))
+
+  const runOperation = (operation: FinanceOperationResult) => {
+    if (operation.success) {
+      setModalMode(null)
+      setToast(operation.message)
+    } else {
+      setToast(operation.message)
+    }
+  }
+
+  useEffect(() => {
+    if (!toast) return
+    const timeout = window.setTimeout(() => setToast(''), 2600)
+    return () => window.clearTimeout(timeout)
+  }, [toast])
+
+  const handleOperation = (amount: number, fields: Record<string, string>): FinanceOperationResult => {
+    if (modalMode === 'income') return finance.addIncome(amount, fields.first)
+    if (modalMode === 'payment') return finance.makePayment(amount, fields.second, fields.first)
+    if (modalMode === 'savings') return finance.addSavings(amount)
+    if (modalMode === 'withdraw') return finance.withdrawSavings(amount)
+    return finance.transferMoney(amount, fields.first, fields.second)
+  }
+
+  const displayStats = [
+    { label: 'Total Balance', value: finance.balance, change: 'Live demo balance', up: true, large: true },
+    { label: 'Monthly Income', value: finance.income, change: 'All sources', up: true, large: false },
+    { label: 'Monthly Expenses', value: finance.expenses, change: 'Payments + transfers', up: false, large: false },
+    { label: 'Savings', value: finance.savings, change: `${Math.min(100, Math.round((finance.savings / finance.savingsGoal.target) * 100))}% of goal`, up: true, large: false },
+  ]
+  const savingsProgress = Math.min(100, Math.round((finance.savings / finance.savingsGoal.target) * 100))
 
   return (
     <section id="dashboard" className="story-section py-24 lg:py-32 bg-panel/30 border-t border-wire">
@@ -257,14 +284,12 @@ export default function Dashboard() {
             <div className="flex-1 p-4 lg:p-6 min-w-0 overflow-hidden">
 
               {/* Topbar */}
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div>
                   <h3 className="font-display font-semibold text-ink text-sm lg:text-base">{activeNav}</h3>
                   <p className="text-[10px] text-ink-3 font-mono">August 2026</p>
                 </div>
-                <span className="text-[11px] text-ink-3 bg-panel-2 border border-wire px-3 py-1.5 rounded-lg font-mono">
-                  This month
-                </span>
+                <div className="flex flex-wrap items-center gap-2"><span className="text-[10px] text-mint bg-mint-dim border border-mint/20 px-2.5 py-1.5 rounded-lg font-mono">DEMO MODE</span><span className="text-[11px] text-ink-3 bg-panel-2 border border-wire px-3 py-1.5 rounded-lg font-mono">This month</span></div>
               </div>
 
               <nav className="flex lg:hidden gap-1 overflow-x-auto -mx-1 px-1 pb-3 mb-2" aria-label="Dashboard navigation">
@@ -285,16 +310,30 @@ export default function Dashboard() {
 
               <DashboardContext activeNav={activeNav} />
 
+              {activeNav === 'Activity' && <div className="mb-5 flex flex-wrap items-center gap-1"><span className="mr-2 text-[10px] font-mono uppercase tracking-wider text-ink-3">Filter</span>{['All', 'Income', 'Expenses'].map((filter) => <button key={filter} type="button" onClick={() => setActiveFilter(filter)} className={`rounded-lg px-3 py-1.5 text-[10px] font-mono ${activeFilter === filter ? 'bg-mint-dim text-mint' : 'text-ink-3 hover:bg-panel-2 hover:text-ink-2'}`}>{filter}</button>)}</div>}
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
+                {[{ label: 'Add Money', mode: 'income', Icon: Plus }, { label: 'Pay', mode: 'payment', Icon: WalletCards }, { label: 'Transfer', mode: 'transfer', Icon: Send }, { label: 'Savings', mode: 'savings', Icon: PiggyBank }].map(({ label, mode, Icon }) => (
+                  <button key={label} type="button" onClick={() => setModalMode(mode as FinanceModalMode)} className="flex items-center justify-center gap-1.5 rounded-xl border border-wire bg-panel-2 px-3 py-2.5 text-[11px] text-ink-2 transition-colors hover:border-wire-2 hover:text-ink"><Icon size={13} className="text-mint" />{label}</button>
+                ))}
+              </div>
+
+              {activeNav === 'Savings' && <div className="mb-5 rounded-xl border border-wire bg-panel-2 p-4"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-[10px] font-mono uppercase tracking-wider text-ink-3">{finance.savingsGoal.name}</p><p className="mt-1 font-mono text-xl text-ink">{formatINR(finance.savings)} <span className="text-xs text-ink-3">of {formatINR(finance.savingsGoal.target)}</span></p></div><span className="text-sm font-mono text-mint">{savingsProgress}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-wire"><motion.div className="h-full rounded-full bg-mint" animate={{ width: `${savingsProgress}%` }} transition={{ duration: 0.5 }} /></div><div className="mt-3 flex gap-2"><button type="button" onClick={() => setModalMode('savings')} className="rounded-lg bg-mint px-3 py-2 text-[11px] font-semibold text-canvas">Add to Savings</button><button type="button" onClick={() => setModalMode('withdraw')} className="rounded-lg border border-wire px-3 py-2 text-[11px] text-ink-2 hover:border-wire-2 hover:text-ink">Withdraw</button></div></div>}
+
+              {activeNav === 'Cards' && <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-wire bg-panel-2 p-4"><div><p className="text-[10px] font-mono uppercase tracking-wider text-ink-3">VELORA virtual card</p><p className="mt-1 font-mono text-sm text-ink">•••• 4829 <span className="ml-2 text-xs text-ink-3">Available {formatINR(finance.balance)}</span></p></div><button type="button" onClick={() => runOperation(finance.toggleCard())} className={`rounded-lg px-3 py-2 text-[11px] font-semibold ${finance.cardFrozen ? 'bg-warning text-canvas' : 'bg-mint text-canvas'}`}>{finance.cardFrozen ? 'Unfreeze Card' : 'Freeze Card'}</button></div>}
+
+              {activeNav === 'Settings' && <div className="mb-5 rounded-xl border border-wire bg-panel-2 p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs text-ink">Demo preferences</p><p className="text-[10px] font-mono text-ink-3">Currency: INR (₹) · Card: {finance.cardFrozen ? 'Frozen' : 'Active'}</p></div><label className="flex items-center gap-2 text-[11px] text-ink-2"><input type="checkbox" checked={finance.notificationsEnabled} onChange={(event) => finance.setNotificationsEnabled(event.target.checked)} className="accent-mint" /> Notifications</label></div><button type="button" onClick={() => { if (window.confirm('Reset all demo data?')) { finance.resetDemoData(); setToast('Demo data reset') } }} className="mt-4 flex items-center gap-2 text-[11px] text-warning hover:text-warning/80"><RotateCcw size={13} /> Reset Demo Data</button></div>}
+
               {/* Stat cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
-                {stats.map((s) => (
+                {displayStats.map((s) => (
                   <motion.div key={s.label} whileHover={{ y: -2 }} transition={{ duration: 0.18 }} className="bg-panel-2 rounded-xl p-3 border border-wire">
                     <p className="text-[9px] font-mono text-ink-3 mb-1.5 uppercase tracking-wider">{s.label}</p>
                     <p
                       className="font-mono font-medium text-ink leading-none mb-1.5"
                       style={{ fontSize: s.large ? '16px' : '13px' }}
                     >
-                      <AnimatedValue value={s.value} />
+                      {formatINR(s.value)}
                     </p>
                     <div className={`flex items-center gap-1 text-[9px] font-mono ${s.up ? 'text-mint' : 'text-warning'}`}>
                       {s.up ? <TrendingUp size={9} aria-hidden="true" /> : <TrendingDown size={9} aria-hidden="true" />}
@@ -373,26 +412,26 @@ export default function Dashboard() {
                   <div className="px-4 py-2.5 border-b border-wire">
                     <p className="text-[11px] font-mono text-ink-2 uppercase tracking-wider">Transactions</p>
                   </div>
-                  {transactions.map((t) => (
+                  {visibleTransactions.slice(0, activeNav === 'Activity' ? undefined : 6).map((t) => (
                     <div
                       key={t.id}
                       className="flex items-center justify-between px-4 py-2.5 hover:bg-panel-3 transition-colors duration-100 border-b border-wire/60 last:border-b-0"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-7 h-7 rounded-lg bg-panel-3 border border-wire flex items-center justify-center flex-shrink-0">
-                          <span className="text-[8px] font-mono text-ink-3">{t.initials}</span>
+                          <span className="text-[8px] font-mono text-ink-3">{t.title.slice(0, 2).toUpperCase()}</span>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-xs font-medium text-ink truncate">{t.name}</p>
-                          <p className="text-[10px] text-ink-3 font-mono">{t.cat} · {t.date}</p>
+                          <p className="text-xs font-medium text-ink truncate">{t.title}</p>
+                          <p className="text-[10px] text-ink-3 font-mono">{t.category} · {t.date}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 ml-3 flex-shrink-0">
-                        {t.positive
+                        {t.amount > 0
                           ? <ArrowUpRight size={10} className="text-mint" aria-hidden="true" />
                           : <ArrowDownRight size={10} className="text-ink-3" aria-hidden="true" />}
-                        <span className={`text-xs font-mono font-medium ${t.positive ? 'text-mint' : 'text-ink-2'}`}>
-                          {t.amount}
+                        <span className={`text-xs font-mono font-medium ${t.amount > 0 ? 'text-mint' : 'text-ink-2'}`}>
+                          {t.amount > 0 ? '+' : ''}{formatINR(t.amount)}
                         </span>
                       </div>
                     </div>
@@ -404,11 +443,11 @@ export default function Dashboard() {
                     <p className="text-[11px] font-mono text-ink-2 uppercase tracking-wider">Categories</p>
                   </div>
                   <div className="p-4 space-y-3">
-                    {categories.map((c) => (
+                    {categoryTotals.map((c) => (
                       <div key={c.name}>
                         <div className="flex justify-between mb-1">
                           <span className="text-xs text-ink-2">{c.name}</span>
-                          <span className="text-[11px] font-mono text-ink-3">{c.amount}</span>
+                          <span className="text-[11px] font-mono text-ink-3">{formatINR(c.amount)}</span>
                         </div>
                         <div className="h-1 bg-wire rounded-full overflow-hidden">
                           <div
@@ -425,6 +464,8 @@ export default function Dashboard() {
           </div>
         </motion.div>
       </div>
+      <FinanceModal mode={modalMode} onClose={() => setModalMode(null)} onSubmit={handleOperation} />
+      <AnimatePresence>{toast && finance.notificationsEnabled && <motion.div role="status" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="fixed bottom-5 left-1/2 z-[80] -translate-x-1/2 rounded-xl border border-mint/25 bg-panel-2 px-4 py-3 text-xs text-ink shadow-xl shadow-black/40">{toast}</motion.div>}</AnimatePresence>
     </section>
   )
 }
