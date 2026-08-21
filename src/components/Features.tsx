@@ -132,7 +132,7 @@ function IntelligenceVisual() {
 
 export default function Features() {
   return (
-    <section id="features" className="py-24 lg:py-32">
+    <section id="features" className="story-section py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <motion.div {...fadeUp} className="mb-14 max-w-xl">
           <p className="text-xs font-mono text-ink-3 uppercase tracking-[0.16em] mb-4">Features</p>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, ArrowRight } from 'lucide-react'
+import DemoModal from './DemoModal'
 
 const plans = [
   {
@@ -60,6 +61,7 @@ const plans = [
 
 export default function Pricing() {
   const [annual, setAnnual] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
 
   return (
     <section id="pricing" className="py-24 lg:py-32 bg-panel/30 border-t border-wire">
@@ -187,6 +189,8 @@ export default function Pricing() {
 
               {/* CTA */}
               <button
+                type="button"
+                onClick={() => setSelectedPlan(plan.name)}
                 className={`w-full py-3 text-sm font-semibold font-display rounded-xl transition-all duration-200 hover:scale-[0.98] active:scale-95 flex items-center justify-center gap-2 group ${
                   plan.highlight
                     ? 'bg-mint text-canvas hover:bg-mint/90'
@@ -205,6 +209,12 @@ export default function Pricing() {
         <p className="text-center text-[11px] text-ink-3 mt-8 font-mono">
           VELORA is a fictional demo project · All pricing is illustrative only
         </p>
+        <DemoModal
+          open={selectedPlan !== null}
+          onClose={() => setSelectedPlan(null)}
+          title={selectedPlan ? `Start with ${selectedPlan}` : undefined}
+          description="Request early access and we will help you choose the right VELORA plan."
+        />
       </div>
     </section>
   )

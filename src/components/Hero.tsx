@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import DemoModal from './DemoModal'
 
 /* ── Hero Dashboard preview data ─────────────────────── */
 const recentTx = [
@@ -193,6 +195,13 @@ function HeroDashboard() {
 
 /* ── Hero section ────────────────────────────────────── */
 export default function Hero() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll()
+  const copyY = useTransform(scrollYProgress, [0, 0.18], [0, shouldReduceMotion ? 0 : -36])
+  const visualY = useTransform(scrollYProgress, [0, 0.18], [0, shouldReduceMotion ? 0 : 52])
+  const visualScale = useTransform(scrollYProgress, [0, 0.18], [1, shouldReduceMotion ? 1 : 0.96])
+
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
       {/* Background glow */}
@@ -210,7 +219,7 @@ export default function Hero() {
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16 min-h-[calc(100vh-64px)] py-16 lg:py-0">
 
           {/* ── Left: Copy ─────────────────────── */}
-          <div className="flex-1 max-w-xl lg:max-w-none">
+          <motion.div style={{ y: copyY }} className="flex-1 max-w-xl lg:max-w-none">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -249,6 +258,8 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-3 mb-10"
             >
               <button
+                type="button"
+                onClick={() => setModalOpen(true)}
                 className="group flex items-center justify-center gap-2 px-7 py-3.5 bg-mint text-canvas font-semibold text-[15px] rounded-xl hover:bg-mint/92 transition-all duration-200 hover:scale-[0.98] active:scale-95 font-display"
               >
                 Get Started
@@ -280,12 +291,12 @@ export default function Hero() {
               </div>
               <span>Interactive Demo · Built for modern financial control</span>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* ── Right: Dashboard preview ────────── */}
-          <div className="flex-1 flex justify-center lg:justify-end w-full">
+          <motion.div style={{ y: visualY, scale: visualScale }} className="flex-1 flex justify-center lg:justify-end w-full">
             <HeroDashboard />
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -295,6 +306,7 @@ export default function Hero() {
         style={{ background: 'linear-gradient(to bottom, transparent, var(--color-canvas))' }}
         aria-hidden="true"
       />
+      <DemoModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
   )
 }

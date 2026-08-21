@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
+import DemoModal from './DemoModal'
 
 export default function CTA() {
+  const [modalOpen, setModalOpen] = useState(false)
   return (
     <section className="py-24 lg:py-32 border-t border-wire">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -67,7 +70,7 @@ export default function CTA() {
               transition={{ duration: 0.45, delay: 0.36 }}
               className="flex flex-col sm:flex-row gap-3 justify-center"
             >
-              <button className="group flex items-center justify-center gap-2 px-8 py-4 bg-mint text-canvas font-semibold text-base rounded-xl hover:bg-mint/92 transition-all duration-200 hover:scale-[0.98] active:scale-95 font-display">
+              <button type="button" onClick={() => setModalOpen(true)} className="group flex items-center justify-center gap-2 px-8 py-4 bg-mint text-canvas font-semibold text-base rounded-xl hover:bg-mint/92 transition-all duration-200 hover:scale-[0.98] active:scale-95 font-display">
                 Get Started
                 <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-200" aria-hidden="true" />
               </button>
@@ -81,6 +84,7 @@ export default function CTA() {
           </div>
         </motion.div>
       </div>
+      <DemoModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
   )
 }

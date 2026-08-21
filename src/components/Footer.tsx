@@ -11,17 +11,17 @@ const navCols = [
   {
     heading: 'Company',
     links: [
-      { label: 'About', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Contact', href: '#' },
+      { label: 'About', href: '#features' },
+      { label: 'Careers', href: '#pricing' },
+      { label: 'Contact', href: 'mailto:hello@velora.example' },
     ],
   },
   {
     heading: 'Resources',
     links: [
-      { label: 'Help Center', href: '#' },
-      { label: 'Documentation', href: '#' },
-      { label: 'Privacy', href: '#' },
+      { label: 'Help Center', href: '#security' },
+      { label: 'Documentation', href: '#dashboard' },
+      { label: 'Privacy', href: '#security' },
     ],
   },
 ]
@@ -43,10 +43,10 @@ function VeloraWordmark() {
   )
 }
 
-function SocialButton({ label, initials }: { label: string; initials: string }) {
+function SocialButton({ label, initials, href }: { label: string; initials: string; href: string }) {
   return (
     <a
-      href="#"
+      href={href}
       aria-label={label}
       className="w-8 h-8 rounded-lg bg-panel-2 border border-wire flex items-center justify-center text-[10px] font-mono text-ink-3 hover:text-ink-2 hover:border-wire-2 transition-all duration-200"
     >
@@ -70,9 +70,9 @@ export default function Footer() {
               Your money. Your momentum. A modern financial control platform for people who want clarity over their finances.
             </p>
             <div className="flex gap-2.5" role="list" aria-label="Social links">
-              <div role="listitem"><SocialButton label="Follow on X" initials="𝕏" /></div>
-              <div role="listitem"><SocialButton label="View on GitHub" initials="GH" /></div>
-              <div role="listitem"><SocialButton label="Connect on LinkedIn" initials="in" /></div>
+              <div role="listitem"><SocialButton label="Follow on X" initials="X" href="https://x.com" /></div>
+              <div role="listitem"><SocialButton label="View on GitHub" initials="GH" href="https://github.com" /></div>
+              <div role="listitem"><SocialButton label="Connect on LinkedIn" initials="in" href="https://linkedin.com" /></div>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export default function Footer() {
             {['Privacy', 'Terms', 'Cookies'].map((item) => (
               <a
                 key={item}
-                href="#"
+                href={item === 'Privacy' ? '#security' : item === 'Terms' ? '#pricing' : '#features'}
                 className="text-[11px] text-ink-3 hover:text-ink-2 transition-colors font-mono"
               >
                 {item}

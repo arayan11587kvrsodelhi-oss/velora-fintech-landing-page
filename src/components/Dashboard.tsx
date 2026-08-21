@@ -179,7 +179,7 @@ export default function Dashboard() {
   const [activeNav, setActiveNav] = useState('Overview')
 
   return (
-    <section id="dashboard" className="py-24 lg:py-32 bg-panel/30 border-t border-wire">
+    <section id="dashboard" className="story-section py-24 lg:py-32 bg-panel/30 border-t border-wire">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
         {/* Heading */}

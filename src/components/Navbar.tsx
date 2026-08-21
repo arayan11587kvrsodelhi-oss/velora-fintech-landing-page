@@ -125,7 +125,7 @@ export default function Navbar() {
                 <a href="#dashboard" className="w-full px-4 py-3 text-base font-medium text-ink-2 hover:text-ink text-left transition-colors">
                   Sign In
                 </a>
-                <a href="#pricing" className="w-full px-4 py-3 text-base font-semibold bg-mint text-canvas rounded-xl hover:bg-mint/90 transition-all">
+                <a href="#pricing" onClick={() => setMenuOpen(false)} className="w-full px-4 py-3 text-base font-semibold bg-mint text-canvas rounded-xl hover:bg-mint/90 transition-all">
                   Get Started
                 </a>
               </div>

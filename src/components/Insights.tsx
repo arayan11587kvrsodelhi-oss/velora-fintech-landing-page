@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { TrendingDown, Target, BarChart3, ArrowRight } from 'lucide-react'
+import DemoModal from './DemoModal'
 
 const insightCards = [
   {
@@ -26,6 +28,7 @@ const insightCards = [
 ]
 
 export default function Insights() {
+  const [modalOpen, setModalOpen] = useState(false)
   return (
     <section id="insights" className="py-24 lg:py-32 border-t border-wire">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -84,7 +87,7 @@ export default function Insights() {
               </div>
             </div>
 
-            <button className="flex items-center gap-2 text-sm font-medium text-mint hover:text-mint/80 transition-colors group">
+            <button type="button" onClick={() => setModalOpen(true)} className="flex items-center gap-2 text-sm font-medium text-mint hover:text-mint/80 transition-colors group">
               View full report
               <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
@@ -125,6 +128,7 @@ export default function Insights() {
           </div>
         </div>
       </div>
+      <DemoModal open={modalOpen} onClose={() => setModalOpen(false)} title="See the full VELORA report" description="Request access to the detailed financial report preview." />
     </section>
   )
 }
