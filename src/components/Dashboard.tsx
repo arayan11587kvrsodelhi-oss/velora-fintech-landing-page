@@ -60,8 +60,8 @@ interface ChartTooltipProps {
   label?: string
 }
 
-function AnimatedValue({ value }: { value: string }) {
-  const target = Number(value.replace(/[^0-9]/g, ''))
+function AnimatedValue({ value }: { value: number }) {
+  const target = Math.round(value)
   const [current, setCurrent] = useState(0)
 
   useEffect(() => {
@@ -204,6 +204,7 @@ export default function Dashboard() {
     { label: 'Savings', value: finance.savings, change: `${Math.min(100, Math.round((finance.savings / finance.savingsGoal.target) * 100))}% of goal`, up: true, large: false },
   ]
   const savingsProgress = Math.min(100, Math.round((finance.savings / finance.savingsGoal.target) * 100))
+  const liveChartData = [...chartData.slice(0, -1), { month: 'Aug', income: Math.round(finance.income / 1000), expenses: Math.round(finance.expenses / 1000) }]
 
   return (
     <section id="dashboard" className="story-section py-24 lg:py-32 bg-panel/30 border-t border-wire">
@@ -333,7 +334,7 @@ export default function Dashboard() {
                       className="font-mono font-medium text-ink leading-none mb-1.5"
                       style={{ fontSize: s.large ? '16px' : '13px' }}
                     >
-                      {formatINR(s.value)}
+                      <AnimatedValue value={s.value} />
                     </p>
                     <div className={`flex items-center gap-1 text-[9px] font-mono ${s.up ? 'text-mint' : 'text-warning'}`}>
                       {s.up ? <TrendingUp size={9} aria-hidden="true" /> : <TrendingDown size={9} aria-hidden="true" />}
@@ -359,7 +360,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={150}>
-                  <AreaChart data={chartData} margin={{ top: 4, right: 2, left: -34, bottom: 0 }}>
+                  <AreaChart data={liveChartData} margin={{ top: 4, right: 2, left: -34, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gIncome" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#34E99E" stopOpacity={0.18} />
