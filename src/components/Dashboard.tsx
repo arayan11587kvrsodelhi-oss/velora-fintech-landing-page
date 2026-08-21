@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   AreaChart,
   Area,
@@ -77,6 +77,29 @@ interface ChartTooltipProps {
   label?: string
 }
 
+function AnimatedValue({ value }: { value: string }) {
+  const target = Number(value.replace(/[^0-9]/g, ''))
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    let frameId = 0
+    let startTime: number | null = null
+
+    const animate = (time: number) => {
+      if (startTime === null) startTime = time
+      const progress = Math.min((time - startTime) / 900, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCurrent(Math.round(target * eased))
+      if (progress < 1) frameId = window.requestAnimationFrame(animate)
+    }
+
+    frameId = window.requestAnimationFrame(animate)
+    return () => window.cancelAnimationFrame(frameId)
+  }, [target])
+
+  return <>₹{current.toLocaleString('en-IN')}</>
+}
+
 /* ── Custom chart tooltip ──────────────────────────────── */
 function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null
@@ -91,6 +114,63 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
         </div>
       ))}
     </div>
+  )
+}
+
+function DashboardContext({ activeNav }: { activeNav: string }) {
+  const content = {
+    Activity: {
+      label: 'Recent movement',
+      title: 'Every transaction, in context.',
+      body: 'Track income and spending as it happens, with a clear record of where your money goes.',
+      metric: '24 transactions',
+    },
+    Cards: {
+      label: 'Your cards',
+      title: 'Control every way you pay.',
+      body: 'Manage your physical and virtual cards, limits, and payment preferences from one place.',
+      metric: '2 active cards',
+    },
+    Savings: {
+      label: 'Goals',
+      title: 'Make progress feel tangible.',
+      body: 'Keep your short and long-term goals moving with simple targets and visible momentum.',
+      metric: '72% on track',
+    },
+    Insights: {
+      label: 'Signals',
+      title: 'A sharper view of your habits.',
+      body: 'Turn your financial patterns into useful decisions with calm, readable signals.',
+      metric: '+18.6% efficiency',
+    },
+    Settings: {
+      label: 'Preferences',
+      title: 'Your money, your rules.',
+      body: 'Tune notifications, security, and account preferences without leaving your financial home.',
+      metric: 'All systems normal',
+    },
+  }[activeNav as 'Activity' | 'Cards' | 'Savings' | 'Insights' | 'Settings']
+
+  if (!content) return null
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={activeNav}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
+        className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto] items-end bg-panel-2 border border-wire rounded-xl p-4"
+      >
+        <div>
+          <p className="text-[9px] font-mono text-mint uppercase tracking-[0.16em] mb-2">{content.label}</p>
+          <p className="font-display text-lg font-semibold text-ink mb-1">{content.title}</p>
+          <p className="text-xs leading-relaxed text-ink-3 max-w-xl">{content.body}</p>
+        </div>
+        <span className="text-[10px] font-mono text-ink-2 border border-wire rounded-lg px-3 py-2 whitespace-nowrap">{content.metric}</span>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
@@ -179,7 +259,7 @@ export default function Dashboard() {
               {/* Topbar */}
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h3 className="font-display font-semibold text-ink text-sm lg:text-base">Overview</h3>
+                  <h3 className="font-display font-semibold text-ink text-sm lg:text-base">{activeNav}</h3>
                   <p className="text-[10px] text-ink-3 font-mono">August 2026</p>
                 </div>
                 <span className="text-[11px] text-ink-3 bg-panel-2 border border-wire px-3 py-1.5 rounded-lg font-mono">
@@ -187,22 +267,40 @@ export default function Dashboard() {
                 </span>
               </div>
 
+              <nav className="flex lg:hidden gap-1 overflow-x-auto -mx-1 px-1 pb-3 mb-2" aria-label="Dashboard navigation">
+                {navItems.map(({ icon: Icon, label }) => (
+                  <button
+                    key={label}
+                    onClick={() => setActiveNav(label)}
+                    className={`flex items-center gap-1.5 shrink-0 px-2.5 py-2 rounded-lg text-[10px] transition-colors duration-150 ${
+                      activeNav === label ? 'bg-mint-dim text-mint' : 'text-ink-3 hover:text-ink-2 hover:bg-panel-3'
+                    }`}
+                    aria-current={activeNav === label ? 'page' : undefined}
+                  >
+                    <Icon size={12} aria-hidden="true" />
+                    {label}
+                  </button>
+                ))}
+              </nav>
+
+              <DashboardContext activeNav={activeNav} />
+
               {/* Stat cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
                 {stats.map((s) => (
-                  <div key={s.label} className="bg-panel-2 rounded-xl p-3 border border-wire">
+                  <motion.div key={s.label} whileHover={{ y: -2 }} transition={{ duration: 0.18 }} className="bg-panel-2 rounded-xl p-3 border border-wire">
                     <p className="text-[9px] font-mono text-ink-3 mb-1.5 uppercase tracking-wider">{s.label}</p>
                     <p
                       className="font-mono font-medium text-ink leading-none mb-1.5"
                       style={{ fontSize: s.large ? '16px' : '13px' }}
                     >
-                      {s.value}
+                      <AnimatedValue value={s.value} />
                     </p>
                     <div className={`flex items-center gap-1 text-[9px] font-mono ${s.up ? 'text-mint' : 'text-warning'}`}>
                       {s.up ? <TrendingUp size={9} aria-hidden="true" /> : <TrendingDown size={9} aria-hidden="true" />}
                       <span>{s.change}</span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 

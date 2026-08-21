@@ -9,23 +9,26 @@ import VirtualCard from './components/VirtualCard'
 import Pricing from './components/Pricing'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
+import SmoothScroll from './components/SmoothScroll'
 
 export default function App() {
   return (
-    <div className="bg-canvas text-ink font-body min-h-screen overflow-x-hidden">
-      <Navbar />
-      <main>
-        <Hero />
-        <Trust />
-        <Features />
-        <Dashboard />
-        <Insights />
-        <Security />
-        <VirtualCard />
-        <Pricing />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+    <SmoothScroll>
+      <div className="bg-canvas text-ink font-body min-h-screen overflow-x-hidden">
+        <Navbar />
+        <main>
+          <Hero />
+          <Trust />
+          <Features />
+          <Dashboard />
+          <Insights />
+          <Security />
+          <VirtualCard />
+          <Pricing />
+          <CTA />
+        </main>
+        <Footer />
+      </div>
+    </SmoothScroll>
   )
 }

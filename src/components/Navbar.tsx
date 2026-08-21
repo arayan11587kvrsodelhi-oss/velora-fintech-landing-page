@@ -11,10 +11,17 @@ const navLinks = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [scrollingUp, setScrollingUp] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
+    let lastScrollY = window.scrollY
+    const onScroll = () => {
+      const currentScrollY = window.scrollY
+      setScrolled(currentScrollY > 24)
+      setScrollingUp(currentScrollY <= lastScrollY || currentScrollY < 80)
+      lastScrollY = currentScrollY
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -26,6 +33,8 @@ export default function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+          !scrollingUp && scrolled ? '-translate-y-full' : 'translate-y-0'
+        } ${
           scrolled
             ? 'bg-canvas/92 backdrop-blur-xl border-b border-wire'
             : 'bg-transparent'
@@ -65,20 +74,21 @@ export default function Navbar() {
               <a
                 key={link.label}
                 href={link.href}
-                className="px-4 py-2 text-sm font-body text-ink-2 hover:text-ink transition-colors duration-200 rounded-lg hover:bg-panel"
+                className="group relative px-4 py-2 text-sm font-body text-ink-2 hover:text-ink transition-colors duration-200 rounded-lg hover:bg-panel"
               >
                 {link.label}
+                <span className="absolute inset-x-4 bottom-1 h-px origin-left scale-x-0 bg-mint transition-transform duration-200 group-hover:scale-x-100" />
               </a>
             ))}
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <button className="px-4 py-2 text-sm font-medium text-ink-2 hover:text-ink transition-colors duration-200">
+            <a href="#dashboard" className="px-4 py-2 text-sm font-medium text-ink-2 hover:text-ink transition-colors duration-200">
               Sign In
-            </button>
-            <button className="px-4 py-2 text-sm font-semibold bg-mint text-canvas rounded-lg hover:bg-mint/90 transition-all duration-200 hover:scale-[0.98] active:scale-95">
+            </a>
+            <a href="#pricing" className="px-4 py-2 text-sm font-semibold bg-mint text-canvas rounded-lg hover:bg-mint/90 transition-all duration-200 hover:scale-[0.98] active:scale-95">
               Get Started
-            </button>
+            </a>
           </div>
 
           <button
@@ -112,12 +122,12 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="mt-3 pt-3 border-t border-wire flex flex-col gap-2">
-                <button className="w-full px-4 py-3 text-base font-medium text-ink-2 hover:text-ink text-left transition-colors">
+                <a href="#dashboard" className="w-full px-4 py-3 text-base font-medium text-ink-2 hover:text-ink text-left transition-colors">
                   Sign In
-                </button>
-                <button className="w-full px-4 py-3 text-base font-semibold bg-mint text-canvas rounded-xl hover:bg-mint/90 transition-all">
+                </a>
+                <a href="#pricing" className="w-full px-4 py-3 text-base font-semibold bg-mint text-canvas rounded-xl hover:bg-mint/90 transition-all">
                   Get Started
-                </button>
+                </a>
               </div>
             </div>
           </motion.div>

@@ -37,7 +37,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   text-rendering: optimizeLegibility;
 }
 
@@ -97,6 +97,18 @@ body {
   pointer-events: none;
   border-radius: inherit;
 }
+
+.card-shine {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.card-shine:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-wire-2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+button, a { -webkit-tap-highlight-color: transparent; }
 
 /* ── Reduced motion ─────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
